@@ -7,7 +7,7 @@ import java.io.FileReader;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.*;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -24,7 +24,7 @@ import com.chessgame.services.players.SecondPlayer;
 
 @RestController
 public class GameController {
-	
+
 	@Autowired
 	Game game;
 	@Autowired
@@ -36,7 +36,7 @@ public class GameController {
 	public ResponseEntity<Object> uploadFile(@RequestParam("file")	MultipartFile file){
 		return new ResponseEntity<>("file is uploaded",HttpStatus.OK);
 	}
-	
+
 	@GetMapping("/startgame")
 	public String startgame() {
 		Player fp=FirstPlayer.getInstance(true);
@@ -44,31 +44,36 @@ public class GameController {
 		//Game initGame=new Game();
 		game.initialize(fp, sp);
 		return "Game started";
-		
+
 	}
-	
+
 	@PostMapping("/move")
 	public String movePiece(@RequestBody String movement) throws Exception {
 
-		if(board.boxes['a'][0]==null) {
-			return "please start the game before making a move"; 
+		try {
+			if(board.boxes['a'][0]==null) {
+				return "please start the game before making a move"; 
+			}
+			System.out.println("*******"+movement+"*******");
+			//game.playerMove('b', 0, 'c', 0);
+			//game.playerMove('g', 0, 'e', 0);
+			game.playerMove(movement.charAt(0),Character.getNumericValue(movement.charAt(1)), 
+					movement.charAt(2), 
+					Character.getNumericValue(movement.charAt(3)));
+			if(status.isWhiteWin()) {
+				return "FirstPlayer has Won";
+			}
+			else if(status.isBlackWin()) {
+				return "SeconPlayer has Won";
+			}
 		}
-		System.out.println("*******"+movement+"*******");
-		//game.playerMove('b', 0, 'c', 0);
-		//game.playerMove('g', 0, 'e', 0);
-		game.playerMove(movement.charAt(0),Character.getNumericValue(movement.charAt(1)), 
-				movement.charAt(2), 
-				Character.getNumericValue(movement.charAt(3)));
-		if(status.isWhiteWin()) {
-			return "FirstPlayer has Won";
-		}
-		else if(status.isBlackWin()) {
-			return "SeconPlayer has Won";
+		catch(Exception e) {
+			throw new WrongMovesException();
 		}
 		return displayPiecesOn(board.boxes);
-		
+
 	}
-	
+
 	String displayPiecesOn(Spot[][] spots){
 		String currentBoardStatus="";
 		for(char i='a';i<='h';i++) {
@@ -79,13 +84,13 @@ public class GameController {
 				}else {
 					currentBoardStatus += p.getName();
 				}
-				
+
 			}
 			currentBoardStatus += "\n";
 		}
 		System.out.println(currentBoardStatus);
 		return currentBoardStatus;
-		
-		
+
+
 	}
 }
