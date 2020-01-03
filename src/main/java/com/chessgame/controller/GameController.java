@@ -93,4 +93,31 @@ public class GameController {
 
 
 	}
+	
+	@PostMapping("/movepiece")
+	public BoardStatus movePieces(@RequestBody String movement) throws Exception {
+
+		try {
+			if(board.boxes[0][0]==null) {
+				return new BoardStatus(board.boxes,"start the game");
+			}
+			System.out.println("*******"+movement+"*******");
+			//game.playerMove('b', 0, 'c', 0);
+			//game.playerMove('g', 0, 'e', 0);
+			game.playerMove(movement.charAt(0),Character.getNumericValue(movement.charAt(1)), 
+					movement.charAt(2), 
+					Character.getNumericValue(movement.charAt(3)));
+			if(status.isWhiteWin()) {
+				return new BoardStatus(board.boxes,"White win");
+			}
+			else if(status.isBlackWin()) {
+				return new BoardStatus(board.boxes,"Black win");
+			}
+		}
+		catch(Exception e) {
+			throw new WrongMovesException();
+		}
+		return new BoardStatus(board.boxes,"continue");
+
+	}
 }
